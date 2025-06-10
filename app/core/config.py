@@ -1,4 +1,6 @@
 # app/core/config.py
+from dotenv import load_dotenv
+load_dotenv()   # pip install python-dotenv
 
 from pydantic_settings import BaseSettings
 
