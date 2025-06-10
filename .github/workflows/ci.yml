@@ -13,8 +13,9 @@ jobs:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
     env:
-      # make sure `app/` is importable in alembic/env.py
+      # ensure your app/ module is importable by Alembic
       PYTHONPATH: ${{ github.workspace }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,7 +34,7 @@ jobs:
         run: pip install -e .
 
       - name: Run Alembic migrations
-        working-directory: crypto-trading-tool
+        # ▶️ **NO** working-directory here, so this runs in the repo root
         run: alembic upgrade head
 
       - name: Run test suite
