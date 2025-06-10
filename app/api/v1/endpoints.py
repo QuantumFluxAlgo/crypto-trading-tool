@@ -1,4 +1,3 @@
-# app/api/v1/endpoints.py
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import app.db.session as db_session
@@ -27,3 +26,4 @@ async def read_coins(db: Session = Depends(get_db)) -> list[dict]:
         }
         for c in coins
     ]
+
