@@ -37,10 +37,10 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: ${{ secrets.SeanKey_DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           COINGECKO_URL: 'https://api.coingecko.com/api/v3'
-          COINMARKETCAP_KEY: ${{ secrets.SeanKey_COINMARKETCAP_KEY }}
-          LUNARCRUSH_KEY: ${{ secrets.SeanKey_LUNARCRUSH_KEY }}
+          COINMARKETCAP_KEY: ${{ secrets.COINMARKETCAP_KEY }}
+          LUNARCRUSH_KEY: ${{ secrets.LUNARCRUSH_KEY }}
           PYTHONPATH: ${{ github.workspace }}
         run: |
           pytest --maxfail=1 --disable-warnings -q
