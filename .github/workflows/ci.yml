@@ -1,3 +1,5 @@
+# .github/workflows/ci.yml
+
 name: CI
 
 on:
@@ -13,7 +15,7 @@ jobs:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
     env:
-      # ensure your app/ module is importable by Alembic
+      # Ensure `app/` is importable by Alembic’s env.py
       PYTHONPATH: ${{ github.workspace }}
 
     steps:
@@ -25,18 +27,17 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
 
-      - name: Upgrade pip & install dependencies
+      - name: Upgrade pip & install deps
         run: |
           pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Install package in editable mode
+      - name: Install package (editable)
         run: pip install -e .
 
       - name: Run Alembic migrations
-        # ▶️ **NO** working-directory here, so this runs in the repo root
+        # ▶️ No working-directory override – runs in the repo root where alembic.ini lives
         run: alembic upgrade head
 
-      - name: Run test suite
-        run: |
-          pytest --maxfail=1 --disable-warnings -q
+      - name: Run tests
+        run: pytest --maxfail=1 --disable-warnings -q
