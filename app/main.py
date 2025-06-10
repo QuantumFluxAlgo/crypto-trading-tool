@@ -8,14 +8,14 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.api.v1.endpoints import router as v1_router
 from app.db.session import SessionLocal
 from app.crud.crud import upsert_coin, store_market_data, store_sentiment_data
-from app.services.coingecko import fetch_market
-from app.services.cmc import fetch_listings
-from app.services.lunarcrush import fetch_sentiment
+from app.service.coingecko import fetch_market
+from app.service.cmc import fetch_listings
+from app.service.lunarcrush import fetch_sentiment
 
 app = FastAPI(title="Crypto Data API")
 app.include_router(v1_router)
 
-# === Scheduler Setup ===
+# === Scheduler Configuration ===
 scheduler = AsyncIOScheduler()
 
 def job_gecko():
@@ -93,12 +93,13 @@ def job_lunar():
             )
     db.close()
 
-# Schedule within free-tier limits
+# Register jobs (do not start here)
 scheduler.add_job(job_gecko, 'interval', minutes=1)
 scheduler.add_job(job_cmc,   'cron',    hour='*/2')
 scheduler.add_job(job_lunar, 'cron',    hour='*/6')
-scheduler.start()
 
-# === Entrypoint ===
+# === Entrypoint: start scheduler only when running directly ===
 if __name__ == "__main__":
+    scheduler.start()
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
