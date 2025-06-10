@@ -1,1 +1,4 @@
-
+DATABASE_URL=postgresql://crypto_user:Usicktermig1d@localhost:5432/crypto_db
+COINGECKO_URL=https://api.coingecko.com/api/v3
+COINMARKETCAP_KEY=bbf598c2-d5d0-43ff-a45a-b8191d5e26b1
+LUNARCRUSH_KEY=1ls3t0m2xomfhh7hn6t9v04b9pmbqt6inavxkyd7l
