@@ -1,31 +1,41 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  migrations:
+  build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
     env:
-      # Ensure the project root is on PYTHONPATH
+      # make sure `app/` is importable in alembic/env.py
       PYTHONPATH: ${{ github.workspace }}
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "${{ matrix.python-version }}"
 
       - name: Upgrade pip & install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Install the crypto-trading-tool package
+      - name: Install package in editable mode
         run: pip install -e .
 
       - name: Run Alembic migrations
-        # If your alembic.ini lives in a subfolder, set working-directory
         working-directory: crypto-trading-tool
         run: alembic upgrade head
+
+      - name: Run test suite
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
