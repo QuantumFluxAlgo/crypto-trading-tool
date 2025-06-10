@@ -9,6 +9,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,8 +39,15 @@ jobs:
       - name: Install package in editable mode
         run: pip install -e .
 
+      - name: Set DATABASE_URL for CI
+        run: echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres" >> $GITHUB_ENV
+
       - name: Apply migrations
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: alembic upgrade head
 
       - name: Run test suite
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: pytest
