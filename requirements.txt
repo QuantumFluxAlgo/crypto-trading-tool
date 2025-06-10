@@ -1,4 +1,3 @@
-# requirements.txt
 fastapi
 uvicorn[standard]
 sqlalchemy
@@ -7,3 +6,7 @@ psycopg2-binary
 alembic
 python-dotenv
 httpx
+apscheduler
+pydantic-settings
+pytest
+pytest-asyncio
