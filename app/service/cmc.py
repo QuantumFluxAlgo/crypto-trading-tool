@@ -8,3 +8,4 @@ async def fetch_listings():
         resp = await client.get(url, headers=headers)
         resp.raise_for_status()
         return resp.json()
+

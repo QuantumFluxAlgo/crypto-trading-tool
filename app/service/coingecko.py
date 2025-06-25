@@ -2,9 +2,10 @@
 import httpx
 from app.core.config import settings
 
-async def fetch_market(coins: list[str]):
+
+async def fetch_market(ids: list[str]):
     url = f"{settings.coingecko_url}/coins/markets"
-    params = {"vs_currency": "usd", "ids": ",".join(coins)}
+    params = {"vs_currency": "usd", "ids": ",".join(ids)}
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, params=params)
         resp.raise_for_status()

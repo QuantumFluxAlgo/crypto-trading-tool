@@ -22,6 +22,8 @@ if env_url:
 # from app.db.base import Base
 # target_metadata = Base.metadata
 import app.db.base as base_module
+# Import models to register them with SQLAlchemy's metadata
+import app.models.models  # noqa: F401
 target_metadata = base_module.Base.metadata
 
 

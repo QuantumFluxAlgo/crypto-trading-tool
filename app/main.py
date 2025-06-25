@@ -38,6 +38,12 @@ def job_gecko():
                 price_usd=item['current_price'],
                 market_cap=item['market_cap'],
                 volume_24h=item['total_volume'],
+                high_24h=item['high_24h'],
+                low_24h=item['low_24h'],
+                price_change_24h=item['price_change_24h'],
+                price_change_percentage_24h=item['price_change_percentage_24h'],
+                open_24h=item.get('open_24h'),
+                percent_change_24h=item.get('price_change_percentage_24h'),
                 source='coingecko'
             )
     db.close()
@@ -62,6 +68,12 @@ def job_cmc():
                 price_usd=item['quote']['USD']['price'],
                 market_cap=item['quote']['USD']['market_cap'],
                 volume_24h=item['quote']['USD']['volume_24h'],
+                percent_change_1h=item['quote']['USD']['percent_change_1h'],
+                percent_change_24h=item['quote']['USD']['percent_change_24h'],
+                open_24h=item['quote']['USD'].get('open_24h'),
+                high_24h=item['quote']['USD'].get('high_24h'),
+                low_24h=item['quote']['USD'].get('low_24h'),
+                percent_change_24h=item['quote']['USD'].get('percent_change_24h'),
                 source='coinmarketcap'
             )
     db.close()
@@ -102,4 +114,3 @@ scheduler.add_job(job_lunar, 'cron',    hour='*/6')
 if __name__ == "__main__":
     scheduler.start()
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
-

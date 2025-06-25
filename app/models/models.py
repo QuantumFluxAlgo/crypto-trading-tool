@@ -18,6 +18,13 @@ class MarketData(Base):
     price_usd = Column(Numeric)
     market_cap = Column(Numeric)
     volume_24h = Column(Numeric)
+    high_24h = Column(Numeric)
+    low_24h = Column(Numeric)
+    price_change_24h = Column(Numeric)
+    price_change_percentage_24h = Column(Numeric)
+    percent_change_1h = Column(Numeric)
+    percent_change_24h = Column(Numeric)
+    open_24h = Column(Numeric)
     source = Column(String)
     coin = relationship("Coin")
 
@@ -31,3 +38,4 @@ class SentimentData(Base):
     tweet_volume = Column(Integer)
     social_score = Column(Numeric)
     coin = relationship("Coin")
+
