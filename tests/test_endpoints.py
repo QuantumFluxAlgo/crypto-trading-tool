@@ -60,9 +60,25 @@ def test_store_market_data():
     db = TestingSessionLocal()
     now = datetime.utcnow()
     coin = upsert_coin(db, "xrp", "XRP", "coingecko", now)
-    store_market_data(db, coin.id, now, 0.5, 500_000_000.0, 10_000_000.0, "coingecko")
+    store_market_data(
+        db,
+        coin.id,
+        now,
+        0.5,
+        500_000_000.0,
+        10_000_000.0,
+        high_24h=0.6,
+        low_24h=0.4,
+        price_change_24h=0.05,
+        price_change_percentage_24h=10.0,
+        percent_change_1h=1.0,
+        percent_change_24h=2.0,
+        source="coingecko",
+    )
     result = db.query(MarketData).filter_by(coin_id=coin.id).first()
-    assert float(result.price_usd) == 0.5
+    assert float(result.open_24h) == 0.45
+    assert float(result.high_24h) == 0.6
+    assert float(result.percent_change_1h) == 1.0
     db.close()
 
 def test_store_sentiment_data():
@@ -73,3 +89,4 @@ def test_store_sentiment_data():
     result = db.query(SentimentData).filter_by(coin_id=coin.id).first()
     assert float(result.galaxy_score) == 20.0
     db.close()
+

@@ -107,7 +107,7 @@ Visit `http://127.0.0.1:8000/docs` for the OpenAPI UI.
 ## Database Schema
 
 - **coins**: `id, symbol, name, source, last_updated`
-- **market_data**: `id, coin_id, timestamp, price_usd, market_cap, volume_24h, source`
+- **market_data**: `id, coin_id, timestamp, price_usd, market_cap, volume_24h, open_24h, high_24h, low_24h, percent_change_24h, source`
 - **sentiment_data**: `id, coin_id, timestamp, galaxy_score, alt_rank, tweet_volume, social_score`
 
 ---
@@ -117,6 +117,7 @@ Visit `http://127.0.0.1:8000/docs` for the OpenAPI UI.
 ```bash
 # In a new shell
 env . .venv/bin/activate
+pip install -r requirements.txt
 export PYTHONPATH="$PWD"
 export DATABASE_URL="sqlite:///:memory:"
 export COINGECKO_URL="https://api.coingecko.com/api/v3"
