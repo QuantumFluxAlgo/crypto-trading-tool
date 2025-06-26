@@ -1,6 +1,8 @@
 import pytest
 from datetime import datetime
 from fastapi.testclient import TestClient
+import redis
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
@@ -26,21 +28,26 @@ def setup_db(monkeypatch):
     yield
     Base.metadata.drop_all(bind=engine)
 
-client = TestClient(app)
+@pytest.fixture()
+def client():
+    r = redis.Redis.from_url(os.environ['REDIS_URL'])
+    r.flushdb()
+    with TestClient(app) as c:
+        yield c
 
-def test_read_coins_empty():
-    resp = client.get("/api/v1/coins")
+def test_read_coins_empty(client):
+    resp = client.get("/api/v1/coins", headers={"X-API-Key": "testkey"})
     assert resp.status_code == 200
     assert resp.json() == []
 
-def test_read_coins_with_data():
+def test_read_coins_with_data(client):
     db = TestingSessionLocal()
     now = datetime.utcnow()
     upsert_coin(db, "btc", "Bitcoin", "coingecko", now)
     upsert_coin(db, "eth", "Ethereum", "coinmarketcap", now)
     db.close()
 
-    resp = client.get("/api/v1/coins")
+    resp = client.get("/api/v1/coins", headers={"X-API-Key": "testkey"})
     assert resp.status_code == 200
     symbols = {c["symbol"] for c in resp.json()}
     assert symbols == {"btc", "eth"}
@@ -90,3 +97,21 @@ def test_store_sentiment_data():
     assert float(result.galaxy_score) == 20.0
     db.close()
 
+
+def test_auth_missing_key(client):
+    resp = client.get("/api/v1/coins")
+    assert resp.status_code == 401
+
+
+def test_auth_invalid_key(client):
+    resp = client.get("/api/v1/coins", headers={"X-API-Key": "wrong"})
+    assert resp.status_code == 401
+
+
+def test_rate_limiting(client):
+    headers = {"X-API-Key": "testkey"}
+    for _ in range(20):
+        r = client.get("/api/v1/coins", headers=headers)
+        assert r.status_code == 200
+    r = client.get("/api/v1/coins", headers=headers)
+    assert r.status_code == 429

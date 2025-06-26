@@ -11,3 +11,6 @@ pydantic-settings
 pytest
 pytest-asyncio
 tenacity
+fastapi-limiter
+redis
+fakeredis

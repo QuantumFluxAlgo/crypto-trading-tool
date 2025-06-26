@@ -42,6 +42,8 @@ This project provides a minimal FastAPI service that collects cryptocurrency mar
    COINGECKO_URL=https://api.coingecko.com/api/v3
    COINMARKETCAP_KEY=<your_cmc_key>
    LUNARCRUSH_KEY=<your_lunarcrush_key>
+   API_KEYS=your_public_key
+   REDIS_URL=redis://localhost:6379/0
    ```
 
 ## Installation
@@ -67,7 +69,7 @@ pip install -r requirements.txt
 3. Open your browser to `http://127.0.0.1:8000/docs` to explore the API.
 
 ## API Reference
-The service currently exposes a single endpoint:
+All requests must include an `X-API-Key` header. The service currently exposes a single endpoint that is limited to 20 requests per minute per key:
 - `GET /api/v1/coins` – list all coins stored in the database.
 
 The API will expand as trading strategies and exchange integrations are added.
