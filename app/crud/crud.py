@@ -29,13 +29,21 @@ def store_market_data(
     price_usd: float,
     market_cap: float,
     volume_24h: float,
-    open_24h: float,
-    high_24h: float,
-    low_24h: float,
-    percent_change_24h: float,
-    source: str
+    *,
+    open_24h: float | None = None,
+    high_24h: float | None = None,
+    low_24h: float | None = None,
+    price_change_24h: float | None = None,
+    price_change_percentage_24h: float | None = None,
+    percent_change_1h: float | None = None,
+    percent_change_24h: float | None = None,
+    source: str,
 ):
     """Insert a new MarketData row."""
+    
+    if open_24h is None and price_change_24h is not None:
+        open_24h = price_usd - price_change_24h
+
     md = MarketData(
         coin_id=coin_id,
         timestamp=timestamp,
@@ -45,8 +53,11 @@ def store_market_data(
         open_24h=open_24h,
         high_24h=high_24h,
         low_24h=low_24h,
+        price_change_24h=price_change_24h,
+        price_change_percentage_24h=price_change_percentage_24h,
+        percent_change_1h=percent_change_1h,
         percent_change_24h=percent_change_24h,
-        source=source
+        source=source,
     )
     db.add(md)
     db.commit()

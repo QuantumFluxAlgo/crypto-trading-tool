@@ -7,10 +7,16 @@ setup(
     author="Your Name or Org",
     packages=find_packages(where="."),
     install_requires=[
-        # pin or range your runtime deps here
+        "fastapi",
+        "uvicorn[standard]",
         "SQLAlchemy>=1.4,<2.0",
+        "databases",
+        "psycopg2-binary",
         "alembic>=1.8,<2.0",
-        # add other dependencies…
+        "python-dotenv",
+        "httpx",
+        "apscheduler",
+        "pydantic-settings",
     ],
     include_package_data=True,
     zip_safe=False,
