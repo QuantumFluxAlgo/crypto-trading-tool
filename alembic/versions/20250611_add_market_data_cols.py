@@ -7,7 +7,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '20250611_add_market_data_cols'
-down_revision = '20250610_create_tables'
+down_revision = '20250611_add_coin_external_ids'
 branch_labels = None
 depend_on = None
 
