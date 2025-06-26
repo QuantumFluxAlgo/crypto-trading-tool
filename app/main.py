@@ -42,9 +42,10 @@ def job_gecko():
                 low_24h=item['low_24h'],
                 price_change_24h=item['price_change_24h'],
                 price_change_percentage_24h=item['price_change_percentage_24h'],
-                open_24h=item.get('open_24h'),
+                percent_change_1h=None,
                 percent_change_24h=item.get('price_change_percentage_24h'),
-                source='coingecko'
+                open_24h=item.get('open_24h'),
+                source='coingecko',
             )
     db.close()
 
@@ -68,13 +69,14 @@ def job_cmc():
                 price_usd=item['quote']['USD']['price'],
                 market_cap=item['quote']['USD']['market_cap'],
                 volume_24h=item['quote']['USD']['volume_24h'],
-                percent_change_1h=item['quote']['USD']['percent_change_1h'],
-                percent_change_24h=item['quote']['USD']['percent_change_24h'],
-                open_24h=item['quote']['USD'].get('open_24h'),
                 high_24h=item['quote']['USD'].get('high_24h'),
                 low_24h=item['quote']['USD'].get('low_24h'),
+                price_change_24h=item['quote']['USD'].get('price_change_24h'),
+                price_change_percentage_24h=item['quote']['USD'].get('percent_change_24h'),
+                percent_change_1h=item['quote']['USD'].get('percent_change_1h'),
                 percent_change_24h=item['quote']['USD'].get('percent_change_24h'),
-                source='coinmarketcap'
+                open_24h=item['quote']['USD'].get('open_24h'),
+                source='coinmarketcap',
             )
     db.close()
 
