@@ -8,6 +8,7 @@ os.environ.setdefault("COINMARKETCAP_KEY", "dummy")
 os.environ.setdefault("LUNARCRUSH_KEY", "dummy")
 os.environ.setdefault("API_KEYS", "testkey")
 os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+os.environ.setdefault("TESTING", "1")
 
 @pytest.fixture(scope="session", autouse=True)
 def env_settings():
@@ -18,6 +19,7 @@ def env_settings():
     mp.setenv("LUNARCRUSH_KEY", "dummy")
     mp.setenv("API_KEYS", "testkey")
     mp.setenv("REDIS_URL", "redis://localhost:6379/0")
+    mp.setenv("TESTING", "1")
     yield
     mp.undo()
 

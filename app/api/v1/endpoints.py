@@ -15,7 +15,10 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/coins", dependencies=[Depends(RateLimiter(times=20, minutes=1))])
+@router.get(
+    "/coins",
+    dependencies=[Depends(api_key_auth), Depends(RateLimiter(times=20, minutes=1))],
+)
 async def read_coins(db: Session = Depends(get_db)) -> list[dict]:
     """Fetch all coins and return them as JSON-serializable dicts."""
     coins = get_coins(db)
