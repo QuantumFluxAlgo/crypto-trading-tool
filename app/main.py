@@ -5,6 +5,7 @@ import uvicorn
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi_limiter import FastAPILimiter
 import redis.asyncio as redis
+import os
 
 from app.api.v1.endpoints import router as v1_router
 from app.db.session import SessionLocal
@@ -13,6 +14,8 @@ from app.service.coingecko import fetch_market
 from app.service.cmc import fetch_listings
 from app.service.lunarcrush import fetch_sentiment
 from app.core.config import settings
+from app.core.coins import TRACKED_COINS
+from app.models.models import Coin
 
 app = FastAPI(title="Crypto Data API")
 app.include_router(v1_router)
@@ -34,17 +37,19 @@ scheduler = AsyncIOScheduler()
 
 @app.on_event("startup")
 async def start_scheduler():
-    scheduler.start()
+    if not os.getenv("TESTING") and not scheduler.running:
+        scheduler.start()
 
 
 @app.on_event("shutdown")
 async def stop_scheduler():
-    scheduler.shutdown()
+    if not os.getenv("TESTING") and scheduler.running:
+        scheduler.shutdown()
 
 async def job_gecko():
     db = SessionLocal()
     now = datetime.utcnow()
-    data = await fetch_market(['bitcoin', 'ethereum'])
+    data = await fetch_market(TRACKED_COINS)
     with db.begin():
         for item in data:
             coin = upsert_coin(
@@ -78,6 +83,8 @@ async def job_cmc():
     resp = await fetch_listings()
     with db.begin():
         for item in resp['data']:
+            if item.get('slug') not in TRACKED_COINS:
+                continue
             coin = upsert_coin(
                 db,
                 symbol=item['symbol'],
@@ -105,7 +112,8 @@ async def job_cmc():
 
 async def job_lunar():
     db = SessionLocal()
-    for symbol in ['BTC', 'ETH']:
+    symbols = [c.symbol.upper() for c in db.query(Coin.symbol).all()]
+    for symbol in symbols:
         resp = await fetch_sentiment(symbol)
         d = resp['data'][0]
         now = datetime.strptime(
