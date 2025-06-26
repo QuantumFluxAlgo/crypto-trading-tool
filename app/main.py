@@ -4,6 +4,7 @@ from fastapi import FastAPI
 import uvicorn
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
+
 from app.api.v1.endpoints import router as v1_router
 from app.db.session import SessionLocal
 from app.crud.crud import upsert_coin, store_market_data, store_sentiment_data
@@ -16,6 +17,16 @@ app.include_router(v1_router)
 
 # === Scheduler Configuration ===
 scheduler = AsyncIOScheduler()
+
+
+@app.on_event("startup")
+async def start_scheduler():
+    scheduler.start()
+
+
+@app.on_event("shutdown")
+async def stop_scheduler():
+    scheduler.shutdown()
 
 async def job_gecko():
     db = SessionLocal()
@@ -107,11 +118,10 @@ async def job_lunar():
     db.close()
 
 # Register jobs (do not start here)
-scheduler.add_job(job_gecko, 'interval', minutes=1)
-scheduler.add_job(job_cmc,   'cron',    hour='*/2')
-scheduler.add_job(job_lunar, 'cron',    hour='*/6')
+scheduler.add_job(job_gecko, 'interval', minutes=1, max_instances=1)
+scheduler.add_job(job_cmc,   'cron',    hour='*/2', max_instances=1)
+scheduler.add_job(job_lunar, 'cron',    hour='*/6', max_instances=1)
 
 # === Entrypoint: start scheduler only when running directly ===
 if __name__ == "__main__":
-    scheduler.start()
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
