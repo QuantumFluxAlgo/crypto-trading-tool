@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime
 
 from fastapi import FastAPI
@@ -18,10 +17,10 @@ app.include_router(v1_router)
 # === Scheduler Configuration ===
 scheduler = AsyncIOScheduler()
 
-def job_gecko():
+async def job_gecko():
     db = SessionLocal()
     now = datetime.utcnow()
-    data = asyncio.run(fetch_market(['bitcoin', 'ethereum']))
+    data = await fetch_market(['bitcoin', 'ethereum'])
     with db.begin():
         for item in data:
             coin = upsert_coin(
@@ -49,10 +48,10 @@ def job_gecko():
             )
     db.close()
 
-def job_cmc():
+async def job_cmc():
     db = SessionLocal()
     now = datetime.utcnow()
-    resp = asyncio.run(fetch_listings())
+    resp = await fetch_listings()
     with db.begin():
         for item in resp['data']:
             coin = upsert_coin(
@@ -80,10 +79,10 @@ def job_cmc():
             )
     db.close()
 
-def job_lunar():
+async def job_lunar():
     db = SessionLocal()
     for symbol in ['BTC', 'ETH']:
-        resp = asyncio.run(fetch_sentiment(symbol))
+        resp = await fetch_sentiment(symbol)
         d = resp['data'][0]
         now = datetime.strptime(
             d['time_series'][0]['time'], '%Y-%m-%dT%H:%M:%SZ'
