@@ -10,3 +10,4 @@ apscheduler
 pydantic-settings
 pytest
 pytest-asyncio
+tenacity

@@ -17,6 +17,7 @@ setup(
         "httpx",
         "apscheduler",
         "pydantic-settings",
+        "tenacity",
     ],
     include_package_data=True,
     zip_safe=False,
