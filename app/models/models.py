@@ -66,3 +66,14 @@ class Transaction(Base):
     timestamp = Column(DateTime)
     realized_gain = Column(Numeric)
     portfolio = relationship("Portfolio")
+
+
+class PortfolioPosition(Base):
+    __tablename__ = "portfolio_positions"
+    id = Column(Integer, primary_key=True, index=True)
+    coin_id = Column(Integer, ForeignKey("coins.id"))
+    exchange = Column(String)
+    quantity = Column(Numeric)
+    avg_price = Column(Numeric)
+    realized_pnl = Column(Numeric, default=0)
+    coin = relationship("Coin")

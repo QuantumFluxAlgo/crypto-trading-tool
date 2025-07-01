@@ -1,6 +1,6 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
-from app.models.models import (
+from app.models.models import Coin, MarketData, SentimentData, PortfolioPosition
     Coin,
     MarketData,
     SentimentData,
@@ -157,4 +157,38 @@ def create_transaction(
 def get_portfolios_by_user(db: Session, user: str):
     """Return all portfolios for a user."""
     return db.query(Portfolio).filter_by(user=user).all()
+
+
+def create_portfolio_position(
+    db: Session,
+    coin_id: int,
+    exchange: str,
+    quantity: float,
+    avg_price: float,
+    realized_pnl: float = 0.0,
+) -> PortfolioPosition:
+    pos = PortfolioPosition(
+        coin_id=coin_id,
+        exchange=exchange,
+        quantity=quantity,
+        avg_price=avg_price,
+        realized_pnl=realized_pnl,
+    )
+    db.add(pos)
+    db.commit()
+    db.refresh(pos)
+    return pos
+
+
+def get_portfolio_positions(db: Session):
+    return db.query(PortfolioPosition).all()
+
+
+def get_latest_market_price(db: Session, coin_id: int) -> MarketData | None:
+    return (
+        db.query(MarketData)
+        .filter_by(coin_id=coin_id)
+        .order_by(MarketData.timestamp.desc())
+        .first()
+    )
 
