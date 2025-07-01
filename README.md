@@ -68,6 +68,16 @@ pip install -r requirements.txt
    ```
 3. Open your browser to `http://127.0.0.1:8000/docs` to explore the API.
 
+## Portfolio CLI
+
+Several helper commands are available to inspect your portfolio:
+
+```bash
+python -m app.cli.portfolio_cli live      # current portfolio value
+python -m app.cli.portfolio_cli gains     # realized/unrealized gains
+python -m app.cli.portfolio_cli summary   # summaries by exchange and asset
+```
+
 ## API Reference
 All requests must include an `X-API-Key` header. The service currently exposes a single endpoint that is limited to 20 requests per minute per key:
 - `GET /api/v1/coins` – list all coins stored in the database.
