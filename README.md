@@ -68,6 +68,15 @@ pip install -r requirements.txt
    ```
 3. Open your browser to `http://127.0.0.1:8000/docs` to explore the API.
 
+## Web Dashboard
+The project ships with a lightweight dashboard for viewing portfolios.
+
+1. Ensure the `TOTP_SECRET` and `API_KEYS` variables are set in your `.env` file.
+2. Run the application with `uvicorn app.main:app --reload` as above.
+3. Navigate to `http://127.0.0.1:8000/web/portfolios` and supply both `X-API-Key`
+   and `X-TOTP` headers. The TOTP value should be generated from `TOTP_SECRET`
+   using any authenticator app.
+
 ## API Reference
 All requests must include an `X-API-Key` header. The service currently exposes a single endpoint that is limited to 20 requests per minute per key:
 - `GET /api/v1/coins` – list all coins stored in the database.
@@ -80,6 +89,8 @@ The API will expand as trading strategies and exchange integrations are added.
 - **coins**: `id, symbol, name, source, last_updated`
 - **market_data**: `id, coin_id, timestamp, price_usd, market_cap, volume_24h, open_24h, high_24h, low_24h, percent_change_24h, source`
 - **sentiment_data**: `id, coin_id, timestamp, galaxy_score, alt_rank, tweet_volume, social_score`
+- **portfolios**: `id, name`
+- **portfolio_assets**: `id, portfolio_id, coin_id, quantity`
 
 See `app/models/models.py` for the exact column definitions.
 

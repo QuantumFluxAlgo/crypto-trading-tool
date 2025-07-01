@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     lunarcrush_key: str
     api_keys: str = "localtestkey"
     redis_url: str = "redis://localhost:6379/0"
+    totp_secret: str = "BASE32SECRET"
 
     @property
     def api_keys_list(self) -> list[str]:

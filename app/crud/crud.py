@@ -1,6 +1,12 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
-from app.models.models import Coin, MarketData, SentimentData
+from app.models.models import (
+    Coin,
+    MarketData,
+    SentimentData,
+    Portfolio,
+    PortfolioAsset,
+)
 from datetime import datetime
 
 def get_coins(db: Session):
@@ -82,4 +88,16 @@ def store_sentiment_data(
     )
     db.add(sd)
     db.commit()
+
+
+def get_all_portfolios(db: Session) -> list[Portfolio]:
+    return db.query(Portfolio).all()
+
+
+def get_portfolio(db: Session, portfolio_id: int) -> Portfolio | None:
+    return db.query(Portfolio).filter_by(id=portfolio_id).first()
+
+
+def get_portfolio_assets(db: Session, portfolio_id: int) -> list[PortfolioAsset]:
+    return db.query(PortfolioAsset).filter_by(portfolio_id=portfolio_id).all()
 
