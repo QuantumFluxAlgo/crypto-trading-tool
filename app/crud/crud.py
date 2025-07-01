@@ -1,5 +1,6 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
+
 from app.models.models import Coin, MarketData, SentimentData, PortfolioPosition
     Coin,
     MarketData,
@@ -89,6 +90,7 @@ def store_sentiment_data(
     )
     db.add(sd)
     db.commit()
+
 
 
 def get_all_portfolios(db: Session) -> list[Portfolio]:

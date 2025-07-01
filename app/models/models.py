@@ -42,15 +42,22 @@ class SentimentData(Base):
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-
-
-class PortfolioAsset(Base):
-    __tablename__ = "portfolio_assets"
-    id = Column(Integer, primary_key=True)
-    portfolio_id = Column(Integer, ForeignKey("portfolios.id"))
+    id = Column(Integer, primary_key=True, index=True)
     coin_id = Column(Integer, ForeignKey("coins.id"))
     quantity = Column(Numeric)
-    portfolio = relationship("Portfolio")
+    timestamp = Column(DateTime)
+    source = Column(String)
+    coin = relationship("Coin")
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+    id = Column(Integer, primary_key=True, index=True)
+    coin_id = Column(Integer, ForeignKey("coins.id"))
+    timestamp = Column(DateTime)
+    amount = Column(Numeric)
+    tx_type = Column(String)
+    price_usd = Column(Numeric)
+    fee_usd = Column(Numeric)
+    source = Column(String)
     coin = relationship("Coin")
