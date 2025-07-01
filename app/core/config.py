@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     coingecko_url: str
     coinmarketcap_key: str
     lunarcrush_key: str
+    coinstats_api_key: str
+    coinstats_url: str
     api_keys: str = "localtestkey"
     redis_url: str = "redis://localhost:6379/0"
 

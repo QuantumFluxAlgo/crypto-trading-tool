@@ -1,6 +1,12 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
-from app.models.models import Coin, MarketData, SentimentData
+from app.models.models import (
+    Coin,
+    MarketData,
+    SentimentData,
+    Portfolio,
+    Transaction,
+)
 from datetime import datetime
 
 def get_coins(db: Session):
@@ -82,4 +88,60 @@ def store_sentiment_data(
     )
     db.add(sd)
     db.commit()
+
+
+def upsert_portfolio(
+    db: Session,
+    coin_id: int,
+    quantity: float,
+    timestamp: datetime,
+    source: str,
+) -> Portfolio:
+    """Create or update a Portfolio entry."""
+    pf = (
+        db.query(Portfolio)
+        .filter_by(coin_id=coin_id, timestamp=timestamp)
+        .first()
+    )
+    if pf:
+        pf.quantity = quantity
+        pf.source = source
+    else:
+        pf = Portfolio(
+            coin_id=coin_id,
+            quantity=quantity,
+            timestamp=timestamp,
+            source=source,
+        )
+        db.add(pf)
+    db.commit()
+    db.refresh(pf)
+    return pf
+
+
+def store_transaction(
+    db: Session,
+    coin_id: int,
+    timestamp: datetime,
+    amount: float,
+    tx_type: str,
+    price_usd: float,
+    *,
+    fee_usd: float | None = None,
+    source: str,
+) -> Transaction:
+    """Insert a new Transaction row."""
+    tx = Transaction(
+        coin_id=coin_id,
+        timestamp=timestamp,
+        amount=amount,
+        tx_type=tx_type,
+        price_usd=price_usd,
+        fee_usd=fee_usd,
+        source=source,
+    )
+    db.add(tx)
+    db.commit()
+    db.refresh(tx)
+    return tx
 
