@@ -1,6 +1,12 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
-from app.models.models import Coin, MarketData, SentimentData
+from app.models.models import (
+    Coin,
+    MarketData,
+    SentimentData,
+    Portfolio,
+    Transaction,
+)
 from datetime import datetime
 
 def get_coins(db: Session):
@@ -82,4 +88,73 @@ def store_sentiment_data(
     )
     db.add(sd)
     db.commit()
+
+def upsert_portfolio(
+    db: Session,
+    user: str,
+    exchange: str,
+    asset_symbol: str,
+    quantity: float,
+    cost_basis: float,
+    timestamp: datetime,
+    realized_gain: float = 0.0,
+) -> Portfolio:
+    """Create or update a Portfolio row."""
+    portfolio = (
+        db.query(Portfolio)
+        .filter_by(user=user, exchange=exchange, asset_symbol=asset_symbol)
+        .first()
+    )
+    if portfolio:
+        portfolio.quantity = quantity
+        portfolio.cost_basis = cost_basis
+        portfolio.timestamp = timestamp
+        portfolio.realized_gain = realized_gain
+    else:
+        portfolio = Portfolio(
+            user=user,
+            exchange=exchange,
+            asset_symbol=asset_symbol,
+            quantity=quantity,
+            cost_basis=cost_basis,
+            timestamp=timestamp,
+            realized_gain=realized_gain,
+        )
+        db.add(portfolio)
+    db.commit()
+    db.refresh(portfolio)
+    return portfolio
+
+
+def create_transaction(
+    db: Session,
+    portfolio_id: int,
+    user: str,
+    exchange: str,
+    asset_symbol: str,
+    quantity: float,
+    cost_basis: float,
+    timestamp: datetime,
+    realized_gain: float,
+) -> Transaction:
+    """Insert a new Transaction row."""
+    tx = Transaction(
+        portfolio_id=portfolio_id,
+        user=user,
+        exchange=exchange,
+        asset_symbol=asset_symbol,
+        quantity=quantity,
+        cost_basis=cost_basis,
+        timestamp=timestamp,
+        realized_gain=realized_gain,
+    )
+    db.add(tx)
+    db.commit()
+    db.refresh(tx)
+    return tx
+
+
+def get_portfolios_by_user(db: Session, user: str):
+    """Return all portfolios for a user."""
+    return db.query(Portfolio).filter_by(user=user).all()
 

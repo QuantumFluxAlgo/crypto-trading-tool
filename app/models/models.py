@@ -39,3 +39,30 @@ class SentimentData(Base):
     social_score = Column(Numeric)
     coin = relationship("Coin")
 
+
+class Portfolio(Base):
+    __tablename__ = "portfolios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user = Column(String, index=True)
+    exchange = Column(String)
+    asset_symbol = Column(String, index=True)
+    quantity = Column(Numeric)
+    cost_basis = Column(Numeric)
+    timestamp = Column(DateTime)
+    realized_gain = Column(Numeric)
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    portfolio_id = Column(Integer, ForeignKey("portfolios.id"))
+    user = Column(String, index=True)
+    exchange = Column(String)
+    asset_symbol = Column(String, index=True)
+    quantity = Column(Numeric)
+    cost_basis = Column(Numeric)
+    timestamp = Column(DateTime)
+    realized_gain = Column(Numeric)
+    portfolio = relationship("Portfolio")
