@@ -6,7 +6,8 @@ from app.models.models import Coin, MarketData, SentimentData, PortfolioPosition
     MarketData,
     SentimentData,
     Portfolio,
-    Transaction,
+    PortfolioAsset,
+
 )
 from datetime import datetime
 
@@ -91,8 +92,14 @@ def store_sentiment_data(
     db.commit()
 
 
-    )
-    db.add(tx)
-    db.commit()
-    db.refresh(tx)
-    return tx
+
+def get_all_portfolios(db: Session) -> list[Portfolio]:
+    return db.query(Portfolio).all()
+
+
+def get_portfolio(db: Session, portfolio_id: int) -> Portfolio | None:
+    return db.query(Portfolio).filter_by(id=portfolio_id).first()
+
+
+def get_portfolio_assets(db: Session, portfolio_id: int) -> list[PortfolioAsset]:
+    return db.query(PortfolioAsset).filter_by(portfolio_id=portfolio_id).all()

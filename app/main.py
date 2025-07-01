@@ -8,6 +8,7 @@ import redis.asyncio as redis
 import os
 
 from app.api.v1.endpoints import router as v1_router
+from app.web.routes import router as web_router
 from app.db.session import SessionLocal
 from app.crud.crud import upsert_coin, store_market_data, store_sentiment_data
 from app.service.coingecko import fetch_market
@@ -19,6 +20,7 @@ from app.models.models import Coin
 
 app = FastAPI(title="Crypto Data API")
 app.include_router(v1_router)
+app.include_router(web_router)
 
 @app.on_event("startup")
 async def startup_event():
