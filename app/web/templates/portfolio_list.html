@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Portfolios</title></head>
+<body>
+<h1>Portfolios</h1>
+<ul>
+{% for p in portfolios %}
+  <li><a href="/web/portfolios/{{ p.id }}">{{ p.name }}</a></li>
+{% endfor %}
+</ul>
+</body>
+</html>

@@ -14,3 +14,5 @@ tenacity
 fastapi-limiter
 redis
 fakeredis
+pyotp
+jinja2

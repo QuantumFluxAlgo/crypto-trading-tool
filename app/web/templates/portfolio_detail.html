@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>{{ portfolio.name }}</title></head>
+<body>
+<h1>{{ portfolio.name }}</h1>
+<table>
+<tr><th>Coin</th><th>Quantity</th></tr>
+{% for a in assets %}
+<tr>
+<td>{{ a.coin.symbol }}</td>
+<td>{{ a.quantity }}</td>
+</tr>
+{% endfor %}
+</table>
+<a href="/web/portfolios">Back</a>
+</body>
+</html>

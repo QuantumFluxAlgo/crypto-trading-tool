@@ -5,7 +5,8 @@ from app.models.models import Coin, MarketData, SentimentData, PortfolioPosition
     MarketData,
     SentimentData,
     Portfolio,
-    Transaction,
+    PortfolioAsset,
+
 )
 from datetime import datetime
 
@@ -89,106 +90,14 @@ def store_sentiment_data(
     db.add(sd)
     db.commit()
 
-def upsert_portfolio(
-    db: Session,
-    user: str,
-    exchange: str,
-    asset_symbol: str,
-    quantity: float,
-    cost_basis: float,
-    timestamp: datetime,
-    realized_gain: float = 0.0,
-) -> Portfolio:
-    """Create or update a Portfolio row."""
-    portfolio = (
-        db.query(Portfolio)
-        .filter_by(user=user, exchange=exchange, asset_symbol=asset_symbol)
-        .first()
-    )
-    if portfolio:
-        portfolio.quantity = quantity
-        portfolio.cost_basis = cost_basis
-        portfolio.timestamp = timestamp
-        portfolio.realized_gain = realized_gain
-    else:
-        portfolio = Portfolio(
-            user=user,
-            exchange=exchange,
-            asset_symbol=asset_symbol,
-            quantity=quantity,
-            cost_basis=cost_basis,
-            timestamp=timestamp,
-            realized_gain=realized_gain,
-        )
-        db.add(portfolio)
-    db.commit()
-    db.refresh(portfolio)
-    return portfolio
+
+def get_all_portfolios(db: Session) -> list[Portfolio]:
+    return db.query(Portfolio).all()
 
 
-def create_transaction(
-    db: Session,
-    portfolio_id: int,
-    user: str,
-    exchange: str,
-    asset_symbol: str,
-    quantity: float,
-    cost_basis: float,
-    timestamp: datetime,
-    realized_gain: float,
-) -> Transaction:
-    """Insert a new Transaction row."""
-    tx = Transaction(
-        portfolio_id=portfolio_id,
-        user=user,
-        exchange=exchange,
-        asset_symbol=asset_symbol,
-        quantity=quantity,
-        cost_basis=cost_basis,
-        timestamp=timestamp,
-        realized_gain=realized_gain,
-    )
-    db.add(tx)
-    db.commit()
-    db.refresh(tx)
-    return tx
+def get_portfolio(db: Session, portfolio_id: int) -> Portfolio | None:
+    return db.query(Portfolio).filter_by(id=portfolio_id).first()
 
 
-def get_portfolios_by_user(db: Session, user: str):
-    """Return all portfolios for a user."""
-    return db.query(Portfolio).filter_by(user=user).all()
-
-
-def create_portfolio_position(
-    db: Session,
-    coin_id: int,
-    exchange: str,
-    quantity: float,
-    avg_price: float,
-    realized_pnl: float = 0.0,
-) -> PortfolioPosition:
-    pos = PortfolioPosition(
-        coin_id=coin_id,
-        exchange=exchange,
-        quantity=quantity,
-        avg_price=avg_price,
-        realized_pnl=realized_pnl,
-    )
-    db.add(pos)
-    db.commit()
-    db.refresh(pos)
-    return pos
-
-
-def get_portfolio_positions(db: Session):
-    return db.query(PortfolioPosition).all()
-
-
-def get_latest_market_price(db: Session, coin_id: int) -> MarketData | None:
-    return (
-        db.query(MarketData)
-        .filter_by(coin_id=coin_id)
-        .order_by(MarketData.timestamp.desc())
-        .first()
-    )
-
+def get_portfolio_assets(db: Session, portfolio_id: int) -> list[PortfolioAsset]:
+    return db.query(PortfolioAsset).filter_by(portfolio_id=portfolio_id).all()
