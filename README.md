@@ -14,6 +14,7 @@ This project provides a minimal FastAPI service that collects cryptocurrency mar
 7. [Database Schema](#database-schema)
 8. [Running Tests](#running-tests)
 9. [Continuous Integration](#continuous-integration)
+10. [Deploying to Kubernetes](#deploying-to-kubernetes)
 
 ---
 
@@ -68,6 +69,16 @@ pip install -r requirements.txt
    ```
 3. Open your browser to `http://127.0.0.1:8000/docs` to explore the API.
 
+## Portfolio CLI
+
+Several helper commands are available to inspect your portfolio:
+
+```bash
+python -m app.cli.portfolio_cli live      # current portfolio value
+python -m app.cli.portfolio_cli gains     # realized/unrealized gains
+python -m app.cli.portfolio_cli summary   # summaries by exchange and asset
+```
+
 ## API Reference
 All requests must include an `X-API-Key` header. The service currently exposes a single endpoint that is limited to 20 requests per minute per key:
 - `GET /api/v1/coins` – list all coins stored in the database.
@@ -96,6 +107,30 @@ pytest -q
 
 ## Continuous Integration
 GitHub Actions runs the test suite and validates migrations on every push or pull request. The workflow file lives in `.github/workflows/ci.yml`.
+
+## Deploying to Kubernetes
+Follow these steps to run the service in a Kubernetes cluster.
+
+1. **Build the container image** using Podman or Buildah:
+   ```bash
+   podman build -t crypto-tool:latest .
+   # or
+   buildah bud -t crypto-tool:latest .
+   ```
+2. **Apply the manifests** from the `k8s/` directory:
+   ```bash
+   kubectl apply -f k8s/
+   ```
+3. **Verify the deployment and service**:
+   ```bash
+   kubectl get pods
+   kubectl get svc
+   ```
+   Once the service is running, you can port-forward to access the API:
+   ```bash
+   kubectl port-forward svc/crypto-tool 8000:80
+   # Navigate to http://127.0.0.1:8000/docs
+   ```
 
 ---
 This project is a foundation for a future trading bot. Data collection is implemented; strategy logic and exchange execution will be added later.

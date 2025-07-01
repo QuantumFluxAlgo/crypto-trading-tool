@@ -1,0 +1,40 @@
+# alembic/versions/20250612_create_portfolio_tables.py
+"""Create portfolio and transaction tables"""
+from alembic import op
+import sqlalchemy as sa
+
+revision = '20250612_create_portfolio_tables'
+down_revision = '20250611_add_unique_constraints'
+branch_labels = None
+depend_on = None
+
+
+def upgrade():
+    op.create_table(
+        'portfolios',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('user', sa.String, index=True),
+        sa.Column('exchange', sa.String),
+        sa.Column('asset_symbol', sa.String, index=True),
+        sa.Column('quantity', sa.Numeric),
+        sa.Column('cost_basis', sa.Numeric),
+        sa.Column('timestamp', sa.DateTime),
+        sa.Column('realized_gain', sa.Numeric),
+    )
+    op.create_table(
+        'transactions',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('portfolio_id', sa.Integer, sa.ForeignKey('portfolios.id')),
+        sa.Column('user', sa.String, index=True),
+        sa.Column('exchange', sa.String),
+        sa.Column('asset_symbol', sa.String, index=True),
+        sa.Column('quantity', sa.Numeric),
+        sa.Column('cost_basis', sa.Numeric),
+        sa.Column('timestamp', sa.DateTime),
+        sa.Column('realized_gain', sa.Numeric),
+    )
+
+
+def downgrade():
+    op.drop_table('transactions')
+    op.drop_table('portfolios')

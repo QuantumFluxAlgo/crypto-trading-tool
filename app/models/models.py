@@ -61,4 +61,3 @@ class Transaction(Base):
     fee_usd = Column(Numeric)
     source = Column(String)
     coin = relationship("Coin")
-
