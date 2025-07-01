@@ -39,6 +39,7 @@ class SentimentData(Base):
     social_score = Column(Numeric)
     coin = relationship("Coin")
 
+
 class Portfolio(Base):
     __tablename__ = "portfolios"
     id = Column(Integer, primary_key=True)
@@ -53,4 +54,3 @@ class PortfolioAsset(Base):
     quantity = Column(Numeric)
     portfolio = relationship("Portfolio")
     coin = relationship("Coin")
-

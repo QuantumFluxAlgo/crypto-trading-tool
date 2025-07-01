@@ -1,11 +1,12 @@
 # app/crud/crud.py
 from sqlalchemy.orm import Session
-from app.models.models import (
+from app.models.models import Coin, MarketData, SentimentData, PortfolioPosition
     Coin,
     MarketData,
     SentimentData,
     Portfolio,
     PortfolioAsset,
+
 )
 from datetime import datetime
 
@@ -100,4 +101,3 @@ def get_portfolio(db: Session, portfolio_id: int) -> Portfolio | None:
 
 def get_portfolio_assets(db: Session, portfolio_id: int) -> list[PortfolioAsset]:
     return db.query(PortfolioAsset).filter_by(portfolio_id=portfolio_id).all()
-
